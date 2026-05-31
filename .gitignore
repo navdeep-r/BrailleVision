@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Model weights (large binary files)
+model/*.pt
+model/*.pth
+model/*.onnx
+
+# Datasets (not committed — too large)
+datasets/raw_sources/
+datasets/processed_yolo/images/
+datasets/processed_yolo/labels/
+datasets/cell_crops/train/
+datasets/cell_crops/val/
+datasets/cell_crops/test/
+
+# Keep metadata and yaml
+!datasets/processed_yolo/data.yaml
+!datasets/processed_yolo/classes.txt
+!datasets/metadata/
+
+# Training run outputs
+runs/
+
+# Sample outputs (generated at runtime)
+sample_outputs/*.jpg
+sample_outputs/*.png
+sample_outputs/*.txt
+sample_outputs/*.csv
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
