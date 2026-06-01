@@ -21,7 +21,7 @@ env/
 model/*.onnx
 
 # Datasets (not committed — too large)
-datasets/raw_sources/
+# datasets/raw_sources/
 datasets/processed_yolo/images/
 datasets/processed_yolo/labels/
 datasets/cell_crops/train/
@@ -55,3 +55,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+
+pytorch/
+demo/

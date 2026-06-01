@@ -43,6 +43,16 @@ CHAR_TO_PATTERN: Dict[str, int] = {
 }
 
 
+# Hardcoded Angelina custom Cyrillic mapping
+ANGELINA_MAPPING = {
+    "а": "a", "б": "b", "ц": "c", "д": "d", "е": "e",
+    "ф": "f", "г": "g", "х": "h", "и": "i", "ж": "j",
+    "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
+    "п": "p", "ч": "q", "р": "r", "с": "s", "т": "t",
+    "у": "u", "ѳ": "v", "в": "w", "щ": "x", "э": "y",
+    "з": "z"
+}
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -213,9 +223,13 @@ def convert_angelina_image(
         cx, cy, wn, hn = bbox_to_yolo(x, y, w, h, img_w, img_h)
         label_lines.append(f"0 {cx:.6f} {cy:.6f} {wn:.6f} {hn:.6f}")
 
-        # CNN crop (only for known characters, map unknown to 'a' as fallback to ensure CNN has data)
+        # CNN crop: Map using angelina_charset.json if available
+        if char in ANGELINA_MAPPING:
+            char = ANGELINA_MAPPING[char]
+
+        # Only accept known characters; skip unknown/unmapped cells for CNN training
         if char not in CHAR_TO_PATTERN:
-            char = "a"  # Fallback for Cyrillic/unknown to ensure CNN pipeline runs
+            continue
 
         pattern_int = CHAR_TO_PATTERN[char]
         crop = extract_cell_crop(img, x, y, w, h)
@@ -302,7 +316,7 @@ def main():
             ["test"]  * (n - n_train - n_val)
         )
 
-        print(f"\n[Subset: {subset_name}]  {n} images → "
+        print(f"\n[Subset: {subset_name}]  {n} images -> "
               f"train={n_train}, val={n_val}, test={n - n_train - n_val}")
 
         for record, split in zip(records, split_assignments):

@@ -37,7 +37,7 @@ from training.cell_model import BrailleCellClassifier
 
 CROPS_DIR   = "datasets/cell_crops"
 MODEL_OUT   = "model/cell_classifier_best.pth"
-EPOCHS      = 15
+EPOCHS      = 50
 BATCH_SIZE  = 4096
 LR          = 1e-3
 WEIGHT_DECAY = 1e-4
