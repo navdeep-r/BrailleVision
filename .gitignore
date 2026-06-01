@@ -16,8 +16,8 @@ env/
 .env/
 
 # Model weights (large binary files)
-model/*.pt
-model/*.pth
+# model/*.pt
+# model/*.pth
 model/*.onnx
 
 # Datasets (not committed — too large)
