@@ -15,10 +15,8 @@ env/
 .venv/
 .env/
 
-# Model weights (large binary files)
-# model/*.pt
-# model/*.pth
-model/*.onnx
+# Model directory (ignored for final submission as weights will be rebuilt)
+model/
 
 # Datasets (not committed — too large)
 datasets/raw_sources/
@@ -59,3 +57,8 @@ Thumbs.db
 
 pytorch/
 demo/
+
+# Ignore base downloaded models in root
+/*.pt
+/*.pth
+/check_epoch.py

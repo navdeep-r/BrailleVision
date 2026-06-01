@@ -37,7 +37,7 @@ from training.cell_model import BrailleCellClassifier
 
 CROPS_DIR   = "datasets/cell_crops"
 MODEL_OUT   = "model/cell_classifier_best.pth"
-EPOCHS      = 50
+EPOCHS      = 150
 BATCH_SIZE  = 4096
 LR          = 1e-3
 WEIGHT_DECAY = 1e-4
@@ -228,7 +228,12 @@ def main():
         # Save best checkpoint
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            save_checkpoint(model, optimizer, epoch, val_acc, MODEL_OUT)
+            tmp_out = MODEL_OUT + ".tmp"
+            torch.save(model.state_dict(), tmp_out)
+            import os
+            if os.path.exists(MODEL_OUT):
+                os.remove(MODEL_OUT)
+            os.rename(tmp_out, MODEL_OUT)
             print(f"  [SAVED] Saved best model (val_acc={val_acc:.4f})")
             patience_counter = 0
         else:

@@ -23,9 +23,9 @@ class BrailleCellClassifier(nn.Module):
     MobileNetV3Small with a replaced final head for Braille cell classification.
     """
 
-    NUM_CLASSES = 65  # 0-63 bit patterns + 64 blank
+    NUM_CLASSES = 26  # 0-25 mapping to a-z
 
-    def __init__(self, num_classes: int = 65):
+    def __init__(self, num_classes: int = 26):
         super().__init__()
         backbone = models.mobilenet_v3_small(weights="IMAGENET1K_V1")
 

@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ultralytics import YOLO
 from inference.preprocess import preprocess_full
 from inference.postprocess import reconstruct_reading_order
-from inference.braille_decoder import BrailleDecoder, build_grade1_table
+from inference.braille_decoder import BrailleDecoder
 from inference.tts_engine import TTSEngine
 from training.cell_model import BrailleCellClassifier
 
@@ -52,8 +52,8 @@ CNN_TRANSFORM = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-# Grade 1 table for annotation overlay
-_G1_TABLE = build_grade1_table()
+# Alphabet table for annotation overlay (0-25)
+_G1_TABLE = {i: chr(ord('a') + i) for i in range(26)}
 
 
 # ---------------------------------------------------------------------------
