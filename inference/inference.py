@@ -18,6 +18,10 @@ Usage examples:
 
 import os
 import sys
+
+# Globally disable GPU because the RTX 5060 sm_120 is unsupported by the current PyTorch binaries.
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 import cv2
 import numpy as np
 import argparse
@@ -94,6 +98,14 @@ def load_models(
     Load YOLO and CNN models once at startup.
     Returns (yolo_model, cnn_model). Either may be None if weights are missing.
     """
+    # Resolve paths relative to project root (parent of inference/)
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    if not os.path.isabs(yolo_path):
+        yolo_path = os.path.join(project_root, yolo_path)
+    if not os.path.isabs(cnn_path):
+        cnn_path = os.path.join(project_root, cnn_path)
+
     yolo_model = None
     cnn_model  = None
 

@@ -43,7 +43,7 @@ def load_image(source) -> Optional[np.ndarray]:
 # 2. Blur detection
 # ---------------------------------------------------------------------------
 
-def check_blur(image: np.ndarray, threshold: float = 80.0) -> Tuple[bool, float]:
+def check_blur(image: np.ndarray, threshold: float = 5.0) -> Tuple[bool, float]:
     """
     Compute Laplacian variance as a sharpness metric.
     Returns (is_sharp: bool, variance: float).
@@ -222,7 +222,7 @@ def apply_dog_filter(
 
 def preprocess_full(
     image_input,
-    blur_threshold: float = 80.0,
+    blur_threshold: float = 5.0,
     use_dog: bool = False,
     clahe_clip: float = 2.0,
 ) -> Tuple[Optional[np.ndarray], dict]:

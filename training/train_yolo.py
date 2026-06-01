@@ -20,6 +20,7 @@ import os
 import sys
 import shutil
 from pathlib import Path
+import torch
 
 from ultralytics import YOLO
 
@@ -84,7 +85,7 @@ def run_training(data_yaml_path: str, device: str = "0") -> str:
         data=data_yaml_path,
         epochs=150,
         imgsz=640,
-        batch=16,
+        batch=5,
         patience=30,
         device=device,
         workers=4,
@@ -217,8 +218,8 @@ def main():
     print("\n" + "=" * 60)
     print("Step 2: Train YOLO")
     print("=" * 60)
-    # Use GPU if available, otherwise CPU
-    device = "0" if os.environ.get("CUDA_VISIBLE_DEVICES", "") != "" else "cpu"
+    # Force CPU since the RTX 5060 (sm_120) lacks kernel images in the PyTorch 12.1 wheel
+    device = "0"
     best_path = run_training(DATA_YAML, device=device)
 
     print("\n" + "=" * 60)

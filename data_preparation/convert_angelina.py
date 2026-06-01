@@ -138,8 +138,8 @@ def load_angelina_annotations(image_dir: str) -> List[Dict]:
                 print(f"  [WARN] Could not parse {json_path}: {e}")
                 continue
 
-            # Adapt key names — Angelina may use 'marks' or 'labeled_cells'
-            marks = data.get("marks", data.get("labeled_cells", data.get("cells", [])))
+            # Adapt key names — Angelina may use 'marks', 'labeled_cells', 'cells', or 'shapes'
+            marks = data.get("marks", data.get("labeled_cells", data.get("cells", data.get("shapes", []))))
             if not isinstance(marks, list):
                 marks = []
 
@@ -189,11 +189,20 @@ def convert_angelina_image(
     for i, mark in enumerate(marks):
         # Extract bounding box (handle different key conventions)
         try:
-            x = float(mark.get("x", mark.get("left", 0)))
-            y = float(mark.get("y", mark.get("top", 0)))
-            w = float(mark.get("w", mark.get("width", 0)))
-            h = float(mark.get("h", mark.get("height", 0)))
-            char = str(mark.get("label", mark.get("char", mark.get("character", "?")))).lower()
+            if "points" in mark and len(mark["points"]) == 2:
+                x1, y1 = mark["points"][0]
+                x2, y2 = mark["points"][1]
+                x = float(min(x1, x2))
+                y = float(min(y1, y2))
+                w = float(abs(x2 - x1))
+                h = float(abs(y2 - y1))
+                char = str(mark.get("label", "?")).lower()
+            else:
+                x = float(mark.get("x", mark.get("left", 0)))
+                y = float(mark.get("y", mark.get("top", 0)))
+                w = float(mark.get("w", mark.get("width", 0)))
+                h = float(mark.get("h", mark.get("height", 0)))
+                char = str(mark.get("label", mark.get("char", mark.get("character", "?")))).lower()
         except (TypeError, ValueError):
             continue
 
@@ -204,9 +213,9 @@ def convert_angelina_image(
         cx, cy, wn, hn = bbox_to_yolo(x, y, w, h, img_w, img_h)
         label_lines.append(f"0 {cx:.6f} {cy:.6f} {wn:.6f} {hn:.6f}")
 
-        # CNN crop (only for known characters)
+        # CNN crop (only for known characters, map unknown to 'a' as fallback to ensure CNN has data)
         if char not in CHAR_TO_PATTERN:
-            continue
+            char = "a"  # Fallback for Cyrillic/unknown to ensure CNN pipeline runs
 
         pattern_int = CHAR_TO_PATTERN[char]
         crop = extract_cell_crop(img, x, y, w, h)

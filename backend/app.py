@@ -22,6 +22,10 @@ import base64
 import traceback
 from typing import Optional
 
+# Globally disable GPU because the RTX 5060 sm_120 is unsupported by the current PyTorch binaries.
+# This forces both YOLO and the CNN to run on CPU without crashing.
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 import cv2
 import numpy as np
 from flask import Flask, request, jsonify
@@ -46,8 +50,12 @@ GRADE     = int(os.getenv("BRAILLE_GRADE", "2"))
 # Flask app setup
 # ---------------------------------------------------------------------------
 
-app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests (needed when opening index.html as a local file)
+# Resolve project root for serving frontend files
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_FRONTEND_DIR = os.path.join(_PROJECT_ROOT, "frontend")
+
+app = Flask(__name__, static_folder=_FRONTEND_DIR, static_url_path="/static")
+CORS(app)  # Allow cross-origin requests
 
 # ---------------------------------------------------------------------------
 # Load models ONCE at startup
@@ -166,6 +174,24 @@ def run_full_pipeline(image: np.ndarray) -> dict:
 # Routes
 # ---------------------------------------------------------------------------
 
+@app.route("/", methods=["GET"])
+def serve_frontend():
+    """Serve the frontend index.html at the root URL."""
+    from flask import send_from_directory
+    return send_from_directory(_FRONTEND_DIR, "index.html")
+
+
+@app.route("/<path:filename>", methods=["GET"])
+def serve_frontend_files(filename):
+    """Serve other frontend assets (CSS, JS)."""
+    filepath = os.path.join(_FRONTEND_DIR, filename)
+    if os.path.isfile(filepath):
+        from flask import send_from_directory
+        return send_from_directory(_FRONTEND_DIR, filename)
+    # Fall through to other routes / 404
+    from flask import abort
+    abort(404)
+
 @app.route("/api/health", methods=["GET"])
 def health():
     """Health check endpoint."""
@@ -221,5 +247,5 @@ def process_image_endpoint():
 if __name__ == "__main__":
     os.makedirs("sample_outputs", exist_ok=True)
     print("\n[BrailleVision API] Running on http://0.0.0.0:5000")
-    print("  Open frontend/index.html in your browser to use the UI.")
+    print("  Open http://localhost:5000 in your browser to use the UI.")
     app.run(host="0.0.0.0", port=5000, debug=False)

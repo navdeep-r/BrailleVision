@@ -37,12 +37,12 @@ from training.cell_model import BrailleCellClassifier
 
 CROPS_DIR   = "datasets/cell_crops"
 MODEL_OUT   = "model/cell_classifier_best.pth"
-EPOCHS      = 120
-BATCH_SIZE  = 64
+EPOCHS      = 15
+BATCH_SIZE  = 4096
 LR          = 1e-3
 WEIGHT_DECAY = 1e-4
 PATIENCE    = 20
-DEVICE_NAME = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE_NAME = "cuda"
 
 
 # ---------------------------------------------------------------------------
@@ -229,7 +229,7 @@ def main():
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             save_checkpoint(model, optimizer, epoch, val_acc, MODEL_OUT)
-            print(f"  ✓ Saved best model (val_acc={val_acc:.4f})")
+            print(f"  [SAVED] Saved best model (val_acc={val_acc:.4f})")
             patience_counter = 0
         else:
             patience_counter += 1
